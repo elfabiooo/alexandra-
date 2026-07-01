@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Alexandra // Premium Core 🎀</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,600;1,400&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark-coquette: #1a0f12;
+            --pink-neon: #ff6b8b;
+            --pink-soft: #ffb3c1;
+            --gold-glow: #ffd700;
+            --glass-white: rgba(255, 255, 255, 0.07);
+            --border-glass: rgba(255, 179, 193, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%; height: 100%;
+            background: var(--bg-dark-coquette);
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff; overflow: hidden;
+            perspective: 1200px;
+        }
+
+        /* INTERFAZ EXTERNA PERMANENTE: MARCO NEÓN ALEXANDRA */
+        .alexandra-frame {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            border: 4px solid var(--pink-neon); pointer-events: none; z-index: 100;
+            box-shadow: inset 0 0 30px rgba(255, 107, 139, 0.4);
+        }
+        .alexandra-neon-text {
+            position: absolute; font-family: 'Playfair Display', serif; font-style: italic;
+            font-weight: 600; font-size: 0.85rem; color: var(--pink-soft);
+            text-shadow: 0 0 8px var(--pink-neon); text-transform: uppercase; letter-spacing: 5px;
+            pointer-events: none;
+        }
+        .t-top { top: 12px; left: 50%; transform: translateX(-50%); }
+        .t-bottom { bottom: 12px; left: 50%; transform: translateX(-50%); }
+
+        /* VIEWPORT PRINCIPAL */
+        .viewport-3d {
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            position: relative;
+        }
+
+        /* CARTAS CONTENEDORAS SPA */
+        .station-card {
+            position: absolute; width: 90%; max-width: 360px;
+            height: 82%; max-height: 550px;
+            background: rgba(26, 15, 18, 0.9);
+            border: 1px solid var(--border-glass); border-radius: 32px;
+            padding: 25px; display: flex; flex-direction: column;
+            justify-content: space-between; align-items: center;
+            opacity: 0; pointer-events: none;
+            transform: translateZ(-200px) rotateX(10deg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .station-card.active {
+            opacity: 1; pointer-events: auto; transform: translateZ(0) rotateX(0);
+        }
+
+        .tech-title {
+            font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 3px; color: var(--pink-neon); text-align: center;
+        }
+        .display-subtitle {
+            font-family: 'Playfair Display', serif; font-size: 1.6rem;
+            font-style: italic; text-align: center; color: #fff; margin-top: 3px;
+        }
+
+        .btn-premium {
+            width: 100%; padding: 15px; background: linear-gradient(135deg, var(--pink-neon), #ff477e);
+            border: none; border-radius: 20px; color: white; font-weight: 700;
+            font-size: 0.85rem; letter-spacing: 1px; cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 107, 139, 0.3);
+            transition: all 0.2s;
+        }
+        .btn-premium:active { transform: scale(0.98); }
+
+        /* --- CARTA 1: CAJA DE FRASES --- */
+        .box-trigger-area {
+            width: 120px; height: 120px; display: flex; justify-content: center;
+            align-items: center; font-size: 4.5rem; cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 10;
+        }
+        .box-trigger-area:active { transform: scale(1.15) rotate(5deg); }
+        .phrase-display {
+            width: 100%; min-height: 70px; text-align: center; font-size: 0.95rem;
+            font-weight: 400; color: var(--pink-soft); line-height: 1.5; padding: 0 10px;
+        }
+
+        /* --- CARTA 2: RAZONES --- */
+        .reasons-box {
+            width: 100%; height: 240px; background: var(--glass-white);
+            border-radius: 20px; border: 1px solid rgba(255,179,193,0.15);
+            padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+        }
+        .reason-item {
+            font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px 14px;
+            border-radius: 12px; border-left: 3px solid var(--pink-neon);
+            opacity: 0; transform: translateX(-10px); animation: fadeInRight 0.4s forwards;
+        }
+
+        /* --- CARTA 3: SOPA DE LETRAS --- */
+        .wordsearch-grid {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+            margin: 15px 0; width: 100%; max-width: 270px;
+        }
+        .letter-cell {
+            aspect-ratio: 1; background: var(--glass-white); border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 600; font-size: 1.1rem; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s;
+        }
+        .letter-cell.selected {
+            background: var(--pink-neon); color: white; box-shadow: 0 0 10px var(--pink-neon);
+        }
+        .letter-cell.found {
+            background: var(--gold-glow); color: #1a0f12; box-shadow: 0 0 12px var(--gold-glow);
+            font-weight: 700; pointer-events: none;
+        }
+
+        /* VENTANAS FLOTANTES (MODALES COQUETTE COHESIVOS) */
+        .modal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(13, 6, 8, 0.85); z-index: 200; display: flex;
+            justify-content: center; align-items: center; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease; backdrop-filter: blur(8px);
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: #241418; border: 2px solid var(--pink-neon); width: 85%;
+            max-width: 300px; padding: 30px 20px; border-radius: 28px; text-align: center;
+            box-shadow: 0 10px 40px rgba(255,107,139,0.3);
+            transform: scale(0.7); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+        .modal-title { font-family: 'Playfair Display', serif; font-size: 2rem; font-style: italic; color: var(--gold-glow); margin-bottom: 8px; }
+        .modal-body { font-size: 1.1rem; color: #fff; font-weight: 500; margin-bottom: 20px; }
+
+        /* --- CARTA 6: PAPEL DE LA CARTA FINAL --- */
+        .letter-paper {
+            width: 100%; background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--pink-soft); border-radius: 24px;
+            padding: 20px; text-align: center; box-shadow: inset 0 0 15px rgba(255,107,139,0.1);
+        }
+        .heart-icon {
+            font-size: 2.8rem; animation: pulse 1s infinite alternate ease-in-out;
+            margin-bottom: 10px;
+        }
+
+        /* ANIMACIÓN CORAZÓN CARGADOR (CARTA 5) */
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); text-shadow: 0 0 15px #ff6b8b; }
+            100% { transform: scale(1); }
+        }
+        .charging {
+            animation: heartPulse 0.6s infinite ease-in-out;
+        }
+
+        @keyframes fadeInRight { to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.12); } }
+    </style>
+</head>
+<body>
+
+    <div class="alexandra-frame">
+        <div class="alexandra-neon-text t-top">✦ Alexandra ✦</div>
+        <div class="alexandra-neon-text t-bottom">✦ Alexandra ✦</div>
+    </div>
+
+    <div class="modal-overlay" id="reina-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">👑 Reina</h3>
+            <p class="modal-body">Eres mi reina. 💖</p>
+            <button class="btn-premium" onclick="closeModal('reina-modal')">Continuar Recorrido ✨</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="final-modal">
+        <div class="modal-content">
+            <div style="font-size: 3.5rem; margin-bottom: 10px; animation: pulse 0.8s infinite alternate ease-in-out;">💝</div>
+            <h3 class="modal-title" style="color: var(--pink-soft); font-size: 1.8rem;">¡Sintonía Completada!</h3>
+            <p class="modal-body" style="font-size: 0.95rem; line-height: 1.5; color: #e0cbd0;">Recorrido finalizado con éxito. Todo ha sido optimizado con muchísimo amor exclusivamente para ti, Alexandra. 😊🌸</p>
+            <button class="btn-premium" style="background: linear-gradient(135deg, #ff477e, var(--pink-neon));" onclick="closeModal('final-modal')">Cerrar Recorrido 🎀</button>
+        </div>
+    </div>
+
+    <div class="viewport-3d">
+
+        <div class="station-card active" id="card-1">
+            <div class="header-section">
+                <p class="tech-title">Fase 01 // Detalles</p>
+                <h2 class="display-subtitle">Caja de Sorpresas</h2>
+            </div>
+            
+            <div class="box-trigger-area" onclick="triggerPhrase()">🎁</div>
+            <div class="phrase-display" id="phrase-text">Toca la cajita de arriba para liberar un pensamiento lindo... ✨</div>
+
+            <button class="btn-premium" id="btn-card-1" disabled style="opacity: 0.3;" onclick="nextCard(2)">Siguiente Sección 🔒</button>
+        </div>
+
+        <div class="station-card" id="card-2">
+            <div class="header-section">
+                <p class="tech-title">Fase 02 // Sinceridad</p>
+                <h2 class="display-subtitle">Razones por las que me enamoré de ti</h2>
+            </div>
+
+            <div class="reasons-box" id="reasons-container"></div>
+
+            <button class="btn-premium" id="btn-card-2" onclick="addReason()">Descubrir Razón 🌸</button>
+        </div>
+
+        <div class="station-card" id="card-3">
+            <div class="header-section">
+                <p class="tech-title">Fase 03 // Agudeza</p>
+                <h2 class="display-subtitle">Encuentra la palabra</h2>
+            </div>
+
+            <p style="font-size: 0.85rem; color: #b59fa4; text-align: center;">Busca la palabra en la primera fila: <b>REINA</b></p>
+
+            <div class="wordsearch-grid" id="grid-container"></div>
+
+            <button class="btn-premium" id="btn-card-3" disabled style="opacity: 0.3;" onclick="nextCard(4)">Desbloquear Carta Final 🔒</button>
+        </div>
+
+        <div class="station-card" id="card-4">
+            <div class="header-section">
+                <p class="tech-title">Fase 04 // Sinceridad</p>
+                <h2 class="display-subtitle">Te quiero en...</h2>
+            </div>
+            <div class="lang-display" id="lang-text" style="font-size: 2rem; color: var(--gold-glow); font-family: 'Playfair Display', serif; text-align: center; margin: 20px 0;">Te quiero</div>
+            <button class="btn-premium" onclick="changeLang()">Siguiente Idioma 🌍</button>
+            <button class="btn-premium" id="btn-card-4" disabled style="opacity: 0.3; margin-top: 10px;" onclick="nextCard(5)">Avanzar al Medidor 🔒</button>
+        </div>
+
+        <div class="station-card" id="card-5">
+            <div class="header-section">
+                <p class="tech-title">Fase 05 // Conexión</p>
+                <h2 class="display-subtitle">Sintonía Cósmica</h2>
+            </div>
+            <div class="meter-container" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; margin: 20px 0;">
+                <div class="heart-loader" id="heart-load" style="font-size: 4rem; transition: transform 0.1s;">❤️</div>
+                <div id="charge-val" style="font-size: 1.3rem; font-weight: 600; color: var(--pink-soft);">0%</div>
+                <div class="progress-bar-bg" style="width: 100%; height: 16px; background: rgba(255,255,255,0.05); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-glass);">
+                    <div class="progress-bar-fill" id="bar-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--pink-soft), var(--pink-neon)); box-shadow: 0 0 10px var(--pink-neon);"></div>
+                </div>
+            </div>
+            <button class="btn-premium" id="btn-charge" onmousedown="startCharging()" onmouseup="stopCharging()" ontouchstart="startCharging()" ontouchend="stopCharging()">Mantén Presionado ❤️</button>
+        </div>
+
+        <div class="station-card" id="card-6">
+            <div class="header-section">
+                <p class="tech-title">Fase Final // Sintonía</p>
+                <h2 class="display-subtitle">Para ti, de mi parte</h2>
+            </div>
+
+            <div class="letter-paper">
+                <div class="heart-icon">💝</div>
+                <p style="font-size: 0.88rem; line-height: 1.6; color: #e0cbd0; text-align: justify;">
+                    "A veces meto la pata y lo reconozco. No me gusta nada este silencio ni que estemos en sintonías diferentes por una tontería. Te pido una disculpa por mi actitudes un poco inmaduras; tú te mereces solo cosas buenas de mi parte. ¿Me perdonas🥺 y reiniciamos nuestro mood de siempre? 🎀✨"
+                </p>
+            </div>
+
+            <button class="btn-premium" style="background: var(--pink-soft); color: #1a0f12;" onclick="finishAll()">Aceptar e Inicializar 💖</button>
+        </div>
+
+    </div>
+
+    <script>
+        let currentCard = 1;
+        let audioCtx = null;
+
+        function playTone(freq) {
+            try {
+                if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
+                o.type = 'sine'; o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                g.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                o.connect(g); g.connect(audioCtx.destination);
+                o.start(); o.stop(audioCtx.currentTime + 0.4);
+            } catch(e){}
+        }
+
+        function nextCard(num) {
+            playTone(523.25);
+            document.getElementById(`card-${currentCard}`).classList.remove('active');
+            currentCard = num;
+            setTimeout(() => {
+                document.getElementById(`card-${currentCard}`).classList.add('active');
+                if(num === 3) initWordSearch();
+            }, 300);
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+            if(id === 'reina-modal') {
+                const btn = document.getElementById('btn-card-3');
+                btn.disabled = false; btn.style.opacity = '1';
+                btn.innerText = "Ver Idiomas 🌍";
+            }
+        }
+
+        // --- LÓGICA CARTA 1: POOL DE FRASES ---
+        const phrases = [
+            "Tienes la sonrisa más bonita y contagiosa de todas. ✨",
+            "Adoro tu forma de ver la vida, cambias el mood de cualquiera. 🌸",
+            "Tu presencia hace que todo sea un poquito más alegre y especial. 🧸",
+            "Eres de esas personas que vale la pena cuidar todos los días. 💖",
+            "Me encanta cómo eres, nunca pierdas esa esencia única. 🎀"
+        ];
+        let clickCountPhrase = 0;
+        function triggerPhrase() {
+            let index = Math.floor(Math.random() * phrases.length);
+            document.getElementById('phrase-text').innerText = phrases[index];
+            try { playTone(587.33); } catch(err){}
+            clickCountPhrase++;
+            if(clickCountPhrase >= 3) {
+                const btn = document.getElementById('btn-card-1');
+                btn.disabled = false; btn.style.opacity = '1';
+                btn.innerText = "Avanzar a Razones ✨";
+            }
+        }
+
+        // --- LÓGICA CARTA 2: RAZONES ACTUALIZADAS ---
+        const reasonsList = [
+            "Tus hermosos ojos: Tienen un brillo único que ilumina mi mundo y en el que me perdería mil veces sin dudarlo. 👀✨",
+            "Tu hermosa sonrisa: Es mi rincón favorito, la que tiene el poder de cambiar por completo cualquier mal día con solo verla. 💖",
+            "Tu personalidad divertida: Amo la magia y alegría que transmites, haces que todo a tu alrededor sea más bonito y feliz. 🌸🎨",
+            "La paz que me das: En medio de cualquier caos o tormenta, estar contigo es encontrar un refugio perfecto donde todo está bien. 🕊️💝",
+            "Nuestra conexión única: Me fascina que con nadie puedo ser tan genuino y yo mismo como lo soy contigo. Eres mi lugar seguro. 🧸🎀"
+        ];
+        let reasonIdx = 0;
+        function addReason() {
+            if(reasonIdx >= reasonsList.length) {
+                document.getElementById('btn-card-2').setAttribute('onclick', 'nextCard(3)');
+                document.getElementById('btn-card-2').innerText = "Ir a la Sopa de Letras 🧩";
+                return;
+            }
+            const container = document.getElementById('reasons-container');
+            const div = document.createElement('div');
+            div.classList.add('reason-item');
+            div.innerText = `${reasonIdx + 1}. ${reasonsList[reasonIdx]}`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            try { playTone(659.25 + (reasonIdx * 30)); } catch(e){}
+            reasonIdx++;
+        }
+
+        // --- LÓGICA CARTA 3: SOPA DE LETRAS 6x6 ---
+        const gridLetters = [
+            'R','E','I','N','A','X',
+            'O','V','L','B','Z','W',
+            'M','Y','P','C','K','F',
+            'B','J','N','T','G','D',
+            'L','S','H','F','F','I',
+            'E','M','V','A','X','K'
+        ];
+        const correctIndices = [0, 1, 2, 3, 4]; 
+        let selectedIndices = [];
+
+        function initWordSearch() {
+            selectedIndices = [];
+            const grid = document.getElementById('grid-container');
+            grid.innerHTML = "";
+            gridLetters.forEach((letter, idx) => {
+                const cell = document.createElement('div');
+                cell.classList.add('letter-cell');
+                cell.innerText = letter;
+                cell.setAttribute('onclick', `selectLetter(${idx})`);
+                cell.id = `cell-${idx}`;
+                grid.appendChild(cell);
+            });
+        }
+
+        function selectLetter(idx) {
+            try { playTone(700); } catch(e){}
+            const cell = document.getElementById(`cell-${idx}`);
+            
+            if(cell.classList.contains('selected')) {
+                cell.classList.remove('selected');
+                selectedIndices = selectedIndices.filter(i => i !== idx);
+            } else {
+                cell.classList.add('selected');
+                selectedIndices.push(idx);
+            }
+            
+            let isMatch = correctIndices.every(val => selectedIndices.includes(val));
+            
+            if(isMatch) {
+                correctIndices.forEach(i => {
+                    const c = document.getElementById(`cell-${i}`);
+                    c.classList.remove('selected');
+                    c.classList.add('found');
+                });
+                try { playTone(880); } catch(e){}
+                setTimeout(() => {
+                    document.getElementById('reina-modal').classList.add('open');
+                }, 300);
+            }
+        }
+
+        // --- LÓGICA CARTA 4: IDIOMAS ---
+        const langs = ["Te quiero", "I love you", "Je t'aime", "Ti amo", "Ich liebe dich", "Te amo", "Eu te amo", "Kocham cię", "S'agapo", "Aishiteru"];
+        let langIdx = 0;
+        function changeLang() {
+            try { playTone(600 + (langIdx * 20)); } catch(e){}
+            langIdx = (langIdx + 1) % langs.length;
+            document.getElementById('lang-text').innerText = langs[langIdx];
+            if(langIdx === langs.length - 1) { 
+                document.getElementById('btn-card-4').disabled = false; 
+                document.getElementById('btn-card-4').style.opacity = '1'; 
+                document.getElementById('btn-card-4').innerText = "Avanzar al Medidor ✨";
+            }
+        }
+
+        // --- LÓGICA CARTA 5: MEDIDOR ---
+        let chargeInterval = null;
+        let chargePercent = 0;
+        function startCharging() {
+            if(chargePercent >= 100) return;
+            document.getElementById('heart-load').classList.add('charging');
+            chargeInterval = setInterval(() => {
+                if(chargePercent < 100) {
+                    chargePercent++;
+                    document.getElementById('charge-val').innerText = `${chargePercent}%`;
+                    document.getElementById('bar-fill').style.width = `${chargePercent}%`;
+                    if(chargePercent % 5 === 0) { try { playTone(440 + chargePercent); } catch(e){} }
+                } else {
+                    clearInterval(chargeInterval);
+                    document.getElementById('heart-load').classList.remove('charging');
+                    document.getElementById('heart-load').innerText = "💖";
+                    const btn = document.getElementById('btn-charge');
+                    btn.removeAttribute('onmousedown');
+                    btn.removeAttribute('ontouchstart');
+                    btn.setAttribute('onclick', 'nextCard(6)'); 
+                    btn.innerText = "Abrir Carta Final ✉️✨";
+                    try { playTone(987.77); } catch(e){}
+                }
+            }, 40);
+        }
+        function stopCharging() {
+            clearInterval(chargeInterval);
+            document.getElementById('heart-load').classList.remove('charging');
+        }
+
+        // NUEVA FUNCIÓN FINAL: Abre el modal estilizado del programa
+        function finishAll() {
+            try { playTone(1046.50); } catch(e){}
+            document.getElementById('final-modal').classList.add('open');
+        }
+    </script>
+</body>
+</html>
